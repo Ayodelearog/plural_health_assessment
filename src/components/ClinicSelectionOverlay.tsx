@@ -71,7 +71,7 @@ export default function ClinicSelectionOverlay({
 			className="fixed bg-[#EDF0F8] rounded-[10px] shadow-2xl border border-[#CDD8F3] p-8 z-[60] animate-fadeIn"
 			style={{
 				top: buttonRect ? `${buttonRect.bottom + 8}px` : "0px",
-				left: buttonRect ? `${buttonRect.left}px` : "0px",
+				left: buttonRect ? `${buttonRect.left - 450}px` : "0px",
 				minWidth: "500px",
 				maxHeight: "600px",
 			}}>
