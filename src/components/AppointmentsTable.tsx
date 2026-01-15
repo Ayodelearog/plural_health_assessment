@@ -8,17 +8,113 @@ import {
 	MoreVertical,
 	User,
 } from "lucide-react";
-import { appointments } from "@/data/data";
+import { appointments } from "@/src/data/data";
 import ClinicDropdown from "./ClinicDropdown";
 import SortDropdown from "./SortDropdown";
 import HighlightText from "./HighlightText";
 
 interface AppointmentsTableProps {
 	searchQuery: string;
+	setIsAddAppointmentModalOpen: (isOpen: boolean) => void;
+	isaddPatientModalOpen: boolean;
+}
+
+interface ActionsMenuProps {
+	isOpen: boolean;
+	onClose: () => void;
+	buttonRef: React.RefObject<HTMLButtonElement>;
+	patientName: string;
+	setIsAddAppointmentModalOpen: (isOpen: boolean) => void;
+	isaddPatientModalOpen: boolean;
+}
+
+function ActionsMenu({
+	isOpen,
+	onClose,
+	buttonRef,
+	patientName,
+	setIsAddAppointmentModalOpen,
+	isaddPatientModalOpen,
+}: ActionsMenuProps) {
+	const menuRef = useRef<HTMLDivElement | null>(null);
+
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (
+				menuRef.current &&
+				!menuRef.current.contains(event.target as Node) &&
+				buttonRef.current &&
+				!buttonRef.current.contains(event.target as Node)
+			) {
+				onClose();
+			}
+		};
+
+		if (isOpen) {
+			document.addEventListener("mousedown", handleClickOutside);
+		}
+
+		return () => {
+			document.removeEventListener("mousedown", handleClickOutside);
+		};
+	}, [isOpen, onClose, buttonRef]);
+
+	useEffect(() => {
+		if (!isOpen || !menuRef.current || !buttonRef.current) return;
+
+		const buttonRect = buttonRef.current.getBoundingClientRect();
+		const menu = menuRef.current;
+
+		menu.style.top = `${buttonRect.bottom + 1}px`;
+		menu.style.left = `${buttonRect.left - 280}px`;
+	}, [isOpen, buttonRef]);
+
+	if (!isOpen) return null;
+
+	const menuItems = [
+		{ label: "Create appointment", highlighted: false },
+		{ label: "Create invoice", highlighted: true },
+		{ label: "View patient profile", highlighted: false },
+		{ label: "View next of kin", highlighted: false },
+		{ label: "Add demographic info", highlighted: false },
+		{ label: "Update insurance details", highlighted: false },
+		{ label: "Scan paper records", highlighted: false },
+	];
+
+	return (
+		<div
+			ref={menuRef}
+			className="fixed z-50 w-[300px] bg-white border border-[#DFE2E9] rounded-[10px] shadow-xl overflow-hidden py-3 "
+			style={{
+				boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.15)",
+			}}>
+			{menuItems.map((item, index) => (
+				<button
+					key={index}
+					className={`w-full px-6 py-[8.5px] text-left text-sm font-semibold text-[#051438] hover:bg-[#E7E7FC] transition-colors ${
+						item.highlighted ? " " : ""
+					}`}
+					onClick={() => {
+						// trigger create appointment modal
+						if (item.label === "Create appointment") {
+							if (!isaddPatientModalOpen) {
+								setIsAddAppointmentModalOpen(true);
+							}
+						}
+						// alert(`${item.label} clicked for ${patientName}`);
+						onClose();
+					}}>
+					{item.label}
+				</button>
+			))}
+		</div>
+	);
 }
 
 export default function AppointmentsTable({
 	searchQuery,
+	setIsAddAppointmentModalOpen,
+	isaddPatientModalOpen,
 }: AppointmentsTableProps) {
 	const [selectedClinic, setSelectedClinic] = useState("All clinics");
 	const [expandedRows, setExpandedRows] = useState<number[]>([]);
@@ -29,6 +125,13 @@ export default function AppointmentsTable({
 
 	const clinicButtonRef = useRef<HTMLButtonElement>(null);
 	const sortButtonRef = useRef<HTMLButtonElement>(null);
+
+	const [activeMenuId, setActiveMenuId] = useState<number | null>(null);
+	const menuButtonRefs = useRef<Record<number, HTMLButtonElement | null>>({});
+
+	const toggleMenu = (id: number): void => {
+		setActiveMenuId((prev: number | null) => (prev === id ? null : id));
+	};
 
 	// Debounce search query
 	useEffect(() => {
@@ -172,8 +275,8 @@ export default function AppointmentsTable({
 					fill="none"
 					xmlns="http://www.w3.org/2000/svg">
 					<path
-						fill-rule="evenodd"
-						clip-rule="evenodd"
+						fillRule="evenodd"
+						clipRule="evenodd"
 						d="M0 8C0 3.58172 3.58172 0 8 0C12.4183 0 16 3.58172 16 8C16 12.4183 12.4183 16 8 16C3.58172 16 0 12.4183 0 8ZM5.86675 5.11237L8.75433 7.99995L5.86675 10.8875L5.1125 10.1333L7.24583 7.99995L5.1125 5.86662L5.86675 5.11237ZM9.06675 5.11237L11.9543 7.99995L9.06675 10.8875L8.3125 10.1333L10.4458 7.99995L8.3125 5.86662L9.06675 5.11237Z"
 						fill="#D6AB00"
 					/>
@@ -187,8 +290,8 @@ export default function AppointmentsTable({
 					fill="none"
 					xmlns="http://www.w3.org/2000/svg">
 					<path
-						fill-rule="evenodd"
-						clip-rule="evenodd"
+						fillRule="evenodd"
+						clipRule="evenodd"
 						d="M0 7.5C0 3.35786 3.35786 0 7.5 0C11.6421 0 15 3.35786 15 7.5C15 11.6421 11.6421 15 7.5 15C3.35786 15 0 11.6421 0 7.5ZM4 8H11V7H4V8Z"
 						fill="#FF2C2C"
 					/>
@@ -202,8 +305,8 @@ export default function AppointmentsTable({
 					fill="none"
 					xmlns="http://www.w3.org/2000/svg">
 					<path
-						fill-rule="evenodd"
-						clip-rule="evenodd"
+						fillRule="evenodd"
+						clipRule="evenodd"
 						d="M0 7.5C0 3.35786 3.35786 0 7.5 0C11.6421 0 15 3.35786 15 7.5C15 11.6421 11.6421 15 7.5 15C3.35786 15 0 11.6421 0 7.5ZM4.14635 5.14648C4.8939 4.39893 6.10591 4.39893 6.85346 5.14648L7.49991 5.79292L8.14635 5.14648C8.8939 4.39893 10.1059 4.39893 10.8535 5.14648C11.601 5.89402 11.601 7.10603 10.8535 7.85358L7.49991 11.2071L4.14635 7.85358C3.39881 7.10604 3.39881 5.89402 4.14635 5.14648Z"
 						fill="#A22CFF"
 					/>
@@ -217,8 +320,8 @@ export default function AppointmentsTable({
 					fill="none"
 					xmlns="http://www.w3.org/2000/svg">
 					<path
-						fill-rule="evenodd"
-						clip-rule="evenodd"
+						fillRule="evenodd"
+						clipRule="evenodd"
 						d="M0 7.5C0 3.35786 3.35786 0 7.5 0C11.6421 0 15 3.35786 15 7.5C15 11.6421 11.6421 15 7.5 15C3.35786 15 0 11.6421 0 7.5ZM4.14635 5.14648C4.8939 4.39893 6.10591 4.39893 6.85346 5.14648L7.49991 5.79292L8.14635 5.14648C8.8939 4.39893 10.1059 4.39893 10.8535 5.14648C11.601 5.89402 11.601 7.10603 10.8535 7.85358L7.49991 11.2071L4.14635 7.85358C3.39881 7.10604 3.39881 5.89402 4.14635 5.14648Z"
 						fill="#0B0C7D"
 					/>
@@ -232,7 +335,7 @@ export default function AppointmentsTable({
 					fill="none"
 					xmlns="http://www.w3.org/2000/svg">
 					<rect width="16" height="16" rx="8" fill="#FF8B00" />
-					<g clip-path="url(#clip0_2_4551)">
+					<g clipPath="url(#clip0_2_4551)">
 						<path
 							d="M6.96541 6.34221C6.98624 6.28414 7.04465 6.24836 7.10586 6.25637C7.16705 6.26433 7.21441 6.31384 7.21966 6.37532L7.42938 8.82553L7.82209 7.41C7.83816 7.35212 7.89119 7.31237 7.95147 7.31388C8.01148 7.3152 8.06296 7.35711 8.07646 7.41561L8.29515 8.36434L8.66854 6.79553C8.68311 6.73415 8.73943 6.69212 8.80237 6.69481C8.86538 6.6978 8.91739 6.74523 8.92616 6.80769L9.20482 8.79431L9.32974 8.39055C9.34676 8.3356 9.39759 8.29814 9.45511 8.29814H12.4103V7.62167C12.4103 6.9972 11.904 6.49079 11.2792 6.49079H9.48376V4.69531C9.48376 4.07055 8.9775 3.56433 8.35279 3.56433H7.69955H7.5965C6.97193 3.56433 6.46538 4.07057 6.46538 4.69531V6.49077H4.66984C4.04559 6.49077 3.53906 6.99718 3.53906 7.62164V8.31255H6.25839L6.96541 6.34221Z"
 							fill="white"
@@ -266,7 +369,7 @@ export default function AppointmentsTable({
 					fill="none"
 					xmlns="http://www.w3.org/2000/svg">
 					<rect width="16" height="16" rx="8" fill="#A22CFF" />
-					<g clip-path="url(#clip0_2_4592)">
+					<g clipPath="url(#clip0_2_4592)">
 						<path
 							d="M6.96541 6.34221C6.98624 6.28414 7.04465 6.24836 7.10586 6.25637C7.16705 6.26433 7.21441 6.31384 7.21966 6.37532L7.42938 8.82553L7.82209 7.41C7.83816 7.35212 7.89119 7.31237 7.95147 7.31388C8.01148 7.3152 8.06296 7.35711 8.07646 7.41561L8.29515 8.36434L8.66854 6.79553C8.68311 6.73415 8.73943 6.69212 8.80237 6.69481C8.86538 6.6978 8.91739 6.74523 8.92616 6.80769L9.20482 8.79431L9.32974 8.39055C9.34676 8.3356 9.39759 8.29814 9.45511 8.29814H12.4103V7.62167C12.4103 6.9972 11.904 6.49079 11.2792 6.49079H9.48376V4.69531C9.48376 4.07055 8.9775 3.56433 8.35279 3.56433H7.69955H7.5965C6.97193 3.56433 6.46538 4.07057 6.46538 4.69531V6.49077H4.66984C4.04559 6.49077 3.53906 6.99718 3.53906 7.62164V8.31255H6.25839L6.96541 6.34221Z"
 							fill="white"
@@ -300,8 +403,8 @@ export default function AppointmentsTable({
 					fill="none"
 					xmlns="http://www.w3.org/2000/svg">
 					<path
-						fill-rule="evenodd"
-						clip-rule="evenodd"
+						fillRule="evenodd"
+						clipRule="evenodd"
 						d="M0 7.5C0 3.35786 3.35786 0 7.5 0C11.6421 0 15 3.35786 15 7.5C15 11.6421 11.6421 15 7.5 15C3.35786 15 0 11.6421 0 7.5ZM7.0718 10.7106L11.3905 5.31232L10.6096 4.68762L6.92825 9.2893L4.32012 7.11586L3.67993 7.88408L7.0718 10.7106Z"
 						fill="#27AE60"
 					/>
@@ -325,8 +428,8 @@ export default function AppointmentsTable({
 						fill="#051438"
 					/>
 					<path
-						fill-rule="evenodd"
-						clip-rule="evenodd"
+						fillRule="evenodd"
+						clipRule="evenodd"
 						d="M9.70587 3.64706C9.70587 2.18513 10.891 1 12.3529 1C13.8149 1 15 2.18513 15 3.64706C15 5.10899 13.8149 6.29412 12.3529 6.29412C10.891 6.29412 9.70587 5.10899 9.70587 3.64706ZM12.1765 3.82353V2.41176H12.5294V3.82353H12.1765ZM12.5294 4.52941V4.88588H12.1765V4.52941H12.5294Z"
 						fill="#D6AB00"
 					/>
@@ -344,8 +447,8 @@ export default function AppointmentsTable({
 						fill="#051438"
 					/>
 					<path
-						fill-rule="evenodd"
-						clip-rule="evenodd"
+						fillRule="evenodd"
+						clipRule="evenodd"
 						d="M9.70587 3.64706C9.70587 2.18513 10.891 1 12.3529 1C13.8149 1 15 2.18513 15 3.64706C15 5.10899 13.8149 6.29412 12.3529 6.29412C10.891 6.29412 9.70587 5.10899 9.70587 3.64706ZM12.1765 3.82353V2.41176H12.5294V3.82353H12.1765ZM12.5294 4.52941V4.88588H12.1765V4.52941H12.5294Z"
 						fill="#FF2C2C"
 					/>
@@ -363,8 +466,8 @@ export default function AppointmentsTable({
 						fill="#051438"
 					/>
 					<path
-						fill-rule="evenodd"
-						clip-rule="evenodd"
+						fillRule="evenodd"
+						clipRule="evenodd"
 						d="M9.70587 3.64706C9.70587 2.18513 10.891 1 12.3529 1C13.8149 1 15 2.18513 15 3.64706C15 5.10899 13.8149 6.29412 12.3529 6.29412C10.891 6.29412 9.70587 5.10899 9.70587 3.64706ZM12.1765 3.82353V2.41176H12.5294V3.82353H12.1765ZM12.5294 4.52941V4.88588H12.1765V4.52941H12.5294Z"
 						fill="#FF2C2C"
 					/>
@@ -382,8 +485,8 @@ export default function AppointmentsTable({
 						fill="#051438"
 					/>
 					<path
-						fill-rule="evenodd"
-						clip-rule="evenodd"
+						fillRule="evenodd"
+						clipRule="evenodd"
 						d="M9.70587 3.64706C9.70587 2.18513 10.891 1 12.3529 1C13.8149 1 15 2.18513 15 3.64706C15 5.10899 13.8149 6.29412 12.3529 6.29412C10.891 6.29412 9.70587 5.10899 9.70587 3.64706ZM12.1765 3.82353V2.41176H12.5294V3.82353H12.1765ZM12.5294 4.52941V4.88588H12.1765V4.52941H12.5294Z"
 						fill="#FF2C2C"
 					/>
@@ -401,8 +504,8 @@ export default function AppointmentsTable({
 						fill="#051438"
 					/>
 					<path
-						fill-rule="evenodd"
-						clip-rule="evenodd"
+						fillRule="evenodd"
+						clipRule="evenodd"
 						d="M9.70587 3.64706C9.70587 2.18513 10.891 1 12.3529 1C13.8149 1 15 2.18513 15 3.64706C15 5.10899 13.8149 6.29412 12.3529 6.29412C10.891 6.29412 9.70587 5.10899 9.70587 3.64706ZM12.1765 3.82353V2.41176H12.5294V3.82353H12.1765ZM12.5294 4.52941V4.88588H12.1765V4.52941H12.5294Z"
 						fill="#FF2C2C"
 					/>
@@ -420,8 +523,8 @@ export default function AppointmentsTable({
 						fill="#051438"
 					/>
 					<path
-						fill-rule="evenodd"
-						clip-rule="evenodd"
+						fillRule="evenodd"
+						clipRule="evenodd"
 						d="M9.70587 3.64706C9.70587 2.18513 10.891 1 12.3529 1C13.8149 1 15 2.18513 15 3.64706C15 5.10899 13.8149 6.29412 12.3529 6.29412C10.891 6.29412 9.70587 5.10899 9.70587 3.64706ZM12.1765 3.82353V2.41176H12.5294V3.82353H12.1765ZM12.5294 4.52941V4.88588H12.1765V4.52941H12.5294Z"
 						fill="#FF2C2C"
 					/>
@@ -439,8 +542,8 @@ export default function AppointmentsTable({
 						fill="#051438"
 					/>
 					<path
-						fill-rule="evenodd"
-						clip-rule="evenodd"
+						fillRule="evenodd"
+						clipRule="evenodd"
 						d="M9.66281 3.64706C9.66281 2.18513 10.8479 1 12.3099 1C13.7718 1 14.9569 2.18513 14.9569 3.64706C14.9569 5.10899 13.7718 6.29412 12.3099 6.29412C10.8479 6.29412 9.66281 5.10899 9.66281 3.64706ZM12.1587 4.78023L13.683 2.87494L13.4074 2.65445L12.1081 4.27858L11.1876 3.51148L10.9616 3.78262L12.1587 4.78023Z"
 						fill="#27AE60"
 					/>
@@ -493,8 +596,8 @@ export default function AppointmentsTable({
 							fill="none"
 							xmlns="http://www.w3.org/2000/svg">
 							<path
-								fill-rule="evenodd"
-								clip-rule="evenodd"
+								fillRule="evenodd"
+								clipRule="evenodd"
 								d="M3.60005 15.9515V0.6C3.60005 0.268629 3.86867 0 4.20005 0C4.53142 0 4.80005 0.268629 4.80005 0.6V15.9515L6.95152 13.8C7.18583 13.5657 7.56573 13.5657 7.80005 13.8C8.03436 14.0343 8.03436 14.4142 7.80005 14.6485L4.62431 17.8243C4.39 18.0586 4.0101 18.0586 3.77578 17.8243L0.600046 14.6485C0.365731 14.4142 0.365731 14.0343 0.600045 13.8C0.83436 13.5657 1.21426 13.5657 1.44857 13.8L3.60005 15.9515ZM18 4.2C18 4.53137 17.7314 4.8 17.4 4.8H11.4C11.0687 4.8 10.8 4.53137 10.8 4.2C10.8 3.86863 11.0687 3.6 11.4 3.6H17.4C17.7314 3.6 18 3.86863 18 4.2ZM15.6 9C15.6 9.33137 15.3314 9.6 15 9.6H11.4C11.0687 9.6 10.8 9.33137 10.8 9C10.8 8.66863 11.0687 8.4 11.4 8.4H15C15.3314 8.4 15.6 8.66863 15.6 9ZM13.2 13.8C13.2 14.1314 12.9314 14.4 12.6 14.4H11.4C11.0687 14.4 10.8 14.1314 10.8 13.8C10.8 13.4686 11.0687 13.2 11.4 13.2H12.6C12.9314 13.2 13.2 13.4686 13.2 13.8Z"
 								fill="#0B0C7D"
 							/>
@@ -719,7 +822,12 @@ export default function AppointmentsTable({
 
 											{/* More Options */}
 											<td className="w-[60px] px-4 py-[14px] rounded-r-[10px]">
-												<button className="p-1 hover:bg-gray-200 rounded transition-colors">
+												<button
+													ref={(el) => {
+														menuButtonRefs.current[appointment.id] = el;
+													}}
+													onClick={() => toggleMenu(appointment.id)}
+													className="p-1 hover:bg-gray-200 rounded transition-colors">
 													<MoreVertical className="w-5 h-5 text-gray-400" />
 												</button>
 											</td>
@@ -747,6 +855,23 @@ export default function AppointmentsTable({
 				onSelectSort={setSelectedSort}
 				buttonRef={sortButtonRef}
 			/>
+
+			{appointments.map((appointment) => {
+				const buttonRef = {
+					current: menuButtonRefs.current[appointment.id] || null,
+				};
+				return (
+					<ActionsMenu
+						key={`menu-${appointment.id}`}
+						isOpen={activeMenuId === appointment.id}
+						onClose={() => setActiveMenuId(null)}
+						buttonRef={buttonRef as React.RefObject<HTMLButtonElement>}
+						patientName={appointment.patientName}
+						setIsAddAppointmentModalOpen={setIsAddAppointmentModalOpen}
+						isaddPatientModalOpen={isaddPatientModalOpen}
+					/>
+				);
+			})}
 		</div>
 	);
 }

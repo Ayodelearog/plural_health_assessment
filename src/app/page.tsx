@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import SearchBar from "@/components/SearchBar";
-import AppointmentsTable from "@/components/AppointmentsTable";
-import AddPatientModal from "@/components/AddPatientModal";
-import AddAppointmentModal from "@/components/AddAppointmentModal";
+import SearchBar from "@/src/components/SearchBar";
+import AppointmentsTable from "@/src/components/AppointmentsTable";
+import AddPatientModal from "@/src/components/AddPatientModal";
+import AddAppointmentModal from "@/src/components/AddAppointmentModal";
 
 export default function Home() {
 	const [isAddPatientModalOpen, setIsAddPatientModalOpen] = useState(false);
@@ -61,13 +61,46 @@ export default function Home() {
 			</div>
 
 			{/* Scrollable Section: Appointments Table */}
-			<div className="flex-1 overflow-hidden px-8 pb-4 bg-[#EDF0F8] flex flex-col">
-				<AppointmentsTable searchQuery={searchQuery} />
+			<div className="flex-1 overflow-hidden px-8 pb-4 bg-[#EDF0F8] flex flex-col relative">
+				<AppointmentsTable
+					searchQuery={searchQuery}
+					setIsAddAppointmentModalOpen={setIsAddAppointmentModalOpen}
+					isaddPatientModalOpen={isAddPatientModalOpen}
+				/>
+
+				{/* Analytics button */}
+				<button className="group absolute left-8 bottom-8 px-4 py-3 rounded-[10px] bg-[#0B0C7D80] hover:bg-primary flex items-center gap-4 transition-all duration-300 ease-in-out overflow-hidden w-[47px] hover:w-[155px]">
+					<svg
+						width="15"
+						height="15"
+						viewBox="0 0 15 15"
+						fill="none"
+						xmlns="http://www.w3.org/2000/svg"
+						className="flex-shrink-0">
+						<path
+							d="M0 7.49996C0 3.52583 3.09098 0.27365 7 0.0163574V4.0354C5.30385 4.27801 4 5.73672 4 7.49996C4 9.43295 5.567 11 7.5 11C8.28618 11 9.01181 10.7407 9.5961 10.3031L12.438 13.1451C11.1188 14.3 9.39113 15 7.5 15C3.35786 15 0 11.6421 0 7.49996Z"
+							fill="white"
+						/>
+						<path
+							d="M13.1451 12.438C14.3001 11.1187 15 9.39107 15 7.49996C15 6.46644 14.7909 5.48175 14.4128 4.58586L10.7552 6.21147C10.9132 6.61024 11 7.04496 11 7.49996C11 8.28611 10.7408 9.01174 10.3032 9.59602L13.1451 12.438Z"
+							fill="white"
+						/>
+						<path
+							d="M8 4.0354V0.0163574C10.5416 0.183645 12.7373 1.61699 13.9626 3.69166L10.2541 5.33986C9.71063 4.64791 8.91203 4.16585 8 4.0354Z"
+							fill="white"
+						/>
+					</svg>
+
+					<p className="text-base font-bold text-white whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
+						Analytics
+					</p>
+				</button>
 			</div>
 
 			<AddPatientModal
 				isOpen={isAddPatientModalOpen}
 				onClose={() => setIsAddPatientModalOpen(false)}
+				onOpenAppointmentModal={() => setIsAddAppointmentModalOpen(true)}
 			/>
 
 			<AddAppointmentModal

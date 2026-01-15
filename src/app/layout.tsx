@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import Header from "@/components/Header";
+import Header from "@/src/components/Header";
 
 const gilroy = localFont({
 	src: [
@@ -42,9 +42,9 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body
-				className={`${gilroy.variable} antialiased font-sans overflow-hidden`}>
+				className={`${gilroy.variable} antialiased font-sans overflow-hidden `}>
 				<Header />
-				<main className="h-[calc(100vh-73px)] bg-[#EDF0F8] flex flex-col">
+				<main className="h-[calc(100vh-55px)] bg-[#EDF0F8] flex flex-col">
 					{children}
 				</main>
 			</body>

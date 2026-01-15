@@ -12,11 +12,11 @@ interface ClinicDropdownProps {
 
 const clinics = [
 	{ name: "All clinics", icon: null },
-	{ name: "Neurology", icon: "🧠" },
-	{ name: "Ear, Nose & Throat", icon: "👂" },
-	{ name: "Accident & Emergency", icon: "🚑" },
-	{ name: "Cardiology", icon: "❤️" },
-	{ name: "Orthopedics", icon: "🦴" },
+	{ name: "Neurology", icon: "" },
+	{ name: "Ear, Nose & Throat", icon: "" },
+	{ name: "Accident & Emergency", icon: "" },
+	{ name: "Cardiology", icon: "" },
+	{ name: "Orthopedics", icon: "" },
 ];
 
 export default function ClinicDropdown({

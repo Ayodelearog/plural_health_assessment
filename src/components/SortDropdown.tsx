@@ -98,12 +98,16 @@ export default function SortDropdown({
 			<div className="flex flex-col gap-4">
 				{Object.entries(categories).map(([category, options], index) => (
 					<div key={category}>
-						{index > 0 && (
+						{/* {index > 0 && (
 							<div className="border-t border-gray-200 -mx-6 mb-4"></div>
-						)}
-						<div className="text-sm font-medium text-gray-400 mb-3 uppercase tracking-wide">
-							{category}
+						)} */}
+						<div className="flex items-center gap-2">
+							<p className="text-sm font-bold text-[#A6AFC2]  uppercase tracking-wide whitespace-nowrap">
+								{category}
+							</p>
+							<span className="border border-[#DFE2E9] w-full"></span>
 						</div>
+
 						<div className="flex flex-col gap-3">
 							{options.map((option) => (
 								<button

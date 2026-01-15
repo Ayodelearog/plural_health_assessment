@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Search, Clock, TrendingUp, X } from "lucide-react";
-import { appointments } from "@/data/data";
+import { appointments } from "@/src/data/data";
 
 interface SearchOverlayProps {
 	isOpen: boolean;

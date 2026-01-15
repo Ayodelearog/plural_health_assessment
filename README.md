@@ -48,7 +48,7 @@ npm run dev
 ```
 plural_health_assessment/
 ├── app/
-│   ├── fonts/          # Font files (Gilroy - to be added)
+│   ├── fonts/          # Font files (Gilroy)
 │   ├── globals.css     # Global styles and animations
 │   ├── layout.tsx      # Root layout with font configuration
 │   └── page.tsx        # Main dashboard page
@@ -69,34 +69,12 @@ plural_health_assessment/
 ### Colors
 
 - **Primary Brand**: `#0B0C7D` (Deep Blue)
-- **Background**: `#f5f5f7` (Light Gray)
-- **Status Colors**:
-  - Processing: Orange (`#FFA500`)
-  - Not Arrived: Red (`#FF0000`)
-  - Awaiting Vitals: Purple (`#9333EA`)
-  - Awaiting Doctor: Blue (`#3B82F6`)
-  - Admitted to Ward: Amber (`#F59E0B`)
-  - Transferred to A&E: Violet (`#8B5CF6`)
-  - Seen Doctor: Green (`#10B981`)
+
 
 ### Typography
 
-The application uses Gilroy font family. To add the actual font files:
+The application uses Gilroy font family. 
 
-1. Place the following font files in `app/fonts/`:
-   - `Gilroy-Regular.woff2`
-   - `Gilroy-Medium.woff2`
-   - `Gilroy-SemiBold.woff2`
-   - `Gilroy-Bold.woff2`
-
-2. Update `app/layout.tsx` to uncomment the font configuration
-
-## Logo
-
-Currently using a placeholder logo (letter "P" in a circle). To replace with the actual Plural logo:
-
-1. Add the logo file to the `public/` directory
-2. Update the logo component in `components/Header.tsx`
 
 ## Features Implementation
 
@@ -147,22 +125,11 @@ npm start
 npm run lint
 ```
 
-## Future Enhancements
-
-- Backend API integration
-- Real-time appointment updates
-- Patient search functionality
-- Appointment filtering and sorting
-- Print/export functionality
-- User authentication and authorization
-- Multi-language support
-- Dark mode
 
 ## License
 
 ISC
 
 ## Author
-
-Plural Health Assessment Project
+Ayodele Arogundade for Plural Health
 
